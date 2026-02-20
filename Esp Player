@@ -45,7 +45,6 @@ local function create_esp(player)
     RunService.RenderStepped:Connect(update_esp)
 end
 
--- Chạy ESP cho tất cả người chơi
 for _, player in pairs(Players:GetPlayers()) do
     if player ~= LocalPlayer then
         create_esp(player)
