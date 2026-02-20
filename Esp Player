@@ -1,0 +1,57 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+local function create_esp(player)
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "ESP_Highlight"
+    highlight.FillColor = Color3.fromRGB(255, 0, 0)
+    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+    highlight.FillTransparency = 0.5
+    highlight.OutlineTransparency = 0
+    
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "ESP_Info"
+    billboard.Size = UDim2.new(0, 100, 0, 50)
+    billboard.AlwaysOnTop = true
+    billboard.MaxDistance = 5000
+    
+    local infoLabel = Instance.new("TextLabel", billboard)
+    infoLabel.BackgroundTransparency = 1
+    infoLabel.Size = UDim2.new(1, 0, 1, 0)
+    infoLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    infoLabel.TextStrokeTransparency = 0
+    infoLabel.Font = Enum.Font.SourceSansBold
+    infoLabel.TextSize = 12
+    
+    local function update_esp()
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") then
+            local humanoid = player.Character.Humanoid
+            local rootPart = player.Character.HumanoidRootPart
+            
+            highlight.Parent = player.Character
+            billboard.Parent = rootPart
+            
+            local distance = math.floor((LocalPlayer.Character.HumanoidRootPart.Position - rootPart.Position).Magnitude)
+            local health = math.floor(humanoid.Health)
+            
+            infoLabel.Text = string.format("%s\n[HP: %d] [%dm]", player.Name, health, distance)
+        else
+            highlight.Parent = nil
+            billboard.Parent = nil
+        end
+    end
+    
+    RunService.RenderStepped:Connect(update_esp)
+end
+
+-- Chạy ESP cho tất cả người chơi
+for _, player in pairs(Players:GetPlayers()) do
+    if player ~= LocalPlayer then
+        create_esp(player)
+    end
+end
+
+Players.PlayerAdded:Connect(function(player)
+    create_esp(player)
+end)
